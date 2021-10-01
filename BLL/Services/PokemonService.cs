@@ -41,18 +41,23 @@ namespace BLL.Services
 
         public List<PokemonDTO> Get()
         {
-            var pokemons = _pokemonRepository.Get().OrderBy(x=>x.PokedexIndex).Take(12);
+            var pokemons = _pokemonRepository.Get().OrderBy(x => x.PokedexIndex).ToList();
             var pokemonDTOs = new List<PokemonDTO>();
             if (!pokemons.Any())
             {
                 pokemons = _IpokemonHelper.OnGet().Result;
 
             }
-                pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
-            foreach (var pokemon in pokemonDTOs)
-            {
-                pokemon.imageUrl = _IpokemonHelper.GetImageLink(pokemon.name).Result;
-            }
+            pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
+
+            return pokemonDTOs;
+        }
+
+        public List<PokemonDTO> GetPaged(int page, int count)
+        {
+            var pokemons = _pokemonRepository.Get().OrderBy(x => x.PokedexIndex).Skip(page * count).Take(count).ToList();
+            var pokemonDTOs = new List<PokemonDTO>();
+            pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
             return pokemonDTOs;
         }
 

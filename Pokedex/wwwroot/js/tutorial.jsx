@@ -3,7 +3,17 @@
 function Pagination({ data, title, pageLimit, dataLimit }) {
     const [pages] = React.useState(Math.round(data.length / dataLimit));
     const [currentPage, setCurrentPage] = React.useState(1);
-
+    var startIndex;
+    var endIndex;
+    //const handleFetch = () => {
+    //    fetch('/limitedpokemonlist/'+currentPage+' /'+dataLimit)
+    //        .then(response => response.json())
+    //        .then(body => {
+    //            setData([...body.data]);
+    //        })
+    //        .catch(error => console.error('Error', error));
+    //    console.log("did something");
+    //};
     function goToNextPage() {
         setCurrentPage((page) => page + 1);
     }
@@ -18,8 +28,16 @@ function Pagination({ data, title, pageLimit, dataLimit }) {
     }
 
     const getPaginatedData = () => {
-        const startIndex = currentPage * dataLimit - dataLimit;
-        const endIndex = startIndex + dataLimit;
+        startIndex = currentPage * dataLimit - dataLimit;
+        endIndex = startIndex + dataLimit;
+        fetch('/limitedpokemonlist/' + currentPage + ' /' + dataLimit)
+            .then(response => response.json())
+            .then(body => {
+                data = body.data;
+                console.log(data);
+                console.log(body);
+            })
+            .catch(error => console.error('Error', error));
         return data.slice(startIndex, endIndex);
     };
 
@@ -29,7 +47,6 @@ function Pagination({ data, title, pageLimit, dataLimit }) {
     };
 
     console.log("rerunning paging");
-    console.log(data);
     return (
         <div>
             <h1>{title}</h1>
@@ -54,7 +71,7 @@ function Pagination({ data, title, pageLimit, dataLimit }) {
                     className={`prev ${currentPage === 1 ? 'disabled' : ''}`}
                 >
                     prev
-      </button>
+                </button>
 
                 {/* show page numbers */}
                 {getPaginationGroup().map((item, index) => (
@@ -73,7 +90,7 @@ function Pagination({ data, title, pageLimit, dataLimit }) {
                     className={`next ${currentPage === pages ? 'disabled' : ''}`}
                 >
                     next
-      </button>
+                </button>
             </div>
         </div >
     );

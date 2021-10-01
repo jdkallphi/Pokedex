@@ -1,4 +1,5 @@
-﻿using BLL.Services.Interfaces;
+﻿using BLL.DTO;
+using BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pokedex.Models;
@@ -68,11 +69,26 @@ namespace Pokedex.Controllers
         public JsonResult PokemonList()
         {
             var item = _pokemonService.GetById(5);
-            var items = _pokemonService.Get().OrderBy(x=>x.PokedexIndex);
+            var items = _pokemonService.Get().OrderBy(x => x.PokedexIndex);
+            return Json(items);
+        }
+        [Route("limitedpokemonlist/{page?}/{count?}")]
+        public JsonResult LimitedPokemonList(int? page, int? count)
+        {
+            List<PokemonDTO> items = new List<PokemonDTO>();
+            if (page == null || count == null)
+            {
+                items = _pokemonService.Get();
+            }
+            else
+            {
+                items = _pokemonService.GetPaged((int)page, (int)count);
+
+            }
             return Json(items);
         }
         [Route("pokemonimages")]
-        public JsonResult GetImageUrls() 
+        public JsonResult GetImageUrls()
         {
             var item = _pokemonService.GetById(5);
             return Json(item);
