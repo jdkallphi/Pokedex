@@ -1,99 +1,74 @@
-﻿
+﻿import axios from 'axios';
+import ReactPaginate from 'react-paginate';
 
-function Pagination({ data, title, pageLimit, dataLimit }) {
-    const [pages] = React.useState(Math.round(data.length / dataLimit));
-    const [currentPage, setCurrentPage] = React.useState(1);
-    var startIndex;
-    var endIndex;
-    //const handleFetch = () => {
-    //    fetch('/limitedpokemonlist/'+currentPage+' /'+dataLimit)
-    //        .then(response => response.json())
-    //        .then(body => {
-    //            setData([...body.data]);
-    //        })
-    //        .catch(error => console.error('Error', error));
-    //    console.log("did something");
-    //};
-    function goToNextPage() {
-        setCurrentPage((page) => page + 1);
+class Pagination extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            offset: 0,
+            data: [],
+            perPage: 10,
+            currentPage: 0
+        };
+        this.handlePageClick = this
+            .handlePageClick
+            .bind(this);
     }
+    receivedData() {
+        axios
+            .get(`/pokemonlist`)
+            .then(res => {
 
-    function goToPreviousPage() {
-        setCurrentPage((page) => page - 1);
+                const data = res.data;
+                const slice = data.slice(this.state.offset, this.state.offset + this.state.perPage)
+                const postData = slice.map(pd => <React.Fragment>
+                    <p>{pd.title}</p>
+                    <img src={pd.thumbnailUrl} alt="" />
+                </React.Fragment>)
+
+                this.setState({
+                    pageCount: Math.ceil(data.length / this.state.perPage),
+
+                    postData
+                })
+            });
     }
+    handlePageClick = (e) => {
+        const selectedPage = e.selected;
+        const offset = selectedPage * this.state.perPage;
 
-    function changePage(event) {
-        const pageNumber = Number(event.target.textContent);
-        setCurrentPage(pageNumber);
-    }
+        this.setState({
+            currentPage: selectedPage,
+            offset: offset
+        }, () => {
+            this.receivedData()
+        });
 
-    const getPaginatedData = () => {
-        startIndex = currentPage * dataLimit - dataLimit;
-        endIndex = startIndex + dataLimit;
-        fetch('/limitedpokemonlist/' + currentPage + ' /' + dataLimit)
-            .then(response => response.json())
-            .then(body => {
-                data = body.data;
-                console.log(data);
-                console.log(body);
-            })
-            .catch(error => console.error('Error', error));
-        return data.slice(startIndex, endIndex);
     };
 
-    const getPaginationGroup = () => {
-        let start = Math.floor((currentPage - 1) / pageLimit) * pageLimit;
-        return new Array(pageLimit).fill().map((_, idx) => start + idx + 1);
-    };
-
-    console.log("rerunning paging");
-    return (
-        <div>
-            <h1>{title}</h1>
-
-            {/* show the posts, 10 posts at a time */}
-            <div className="dataContainer">
-                < Table data={getPaginatedData()} >
-
-                </Table>
-
+    componentDidMount() {
+        this.receivedData()
+    }
+    render() {
+        return (
+            <div>
+                {this.state.postData}
+                <ReactPaginate
+                    previousLabel={"prev"}
+                    nextLabel={"next"}
+                    breakLabel={"..."}
+                    breakClassName={"break-me"}
+                    pageCount={this.state.pageCount}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={this.handlePageClick}
+                    containerClassName={"pagination"}
+                    subContainerClassName={"pages pagination"}
+                    activeClassName={"active"} />
             </div>
 
-            {/* show the pagination
-        it consists of next and previous buttons
-        along with page numbers, in our case, 5 page
-        numbers at a time
-    */}
-            <div className="pagination">
-                {/* previous button */}
-                <button
-                    onClick={goToPreviousPage}
-                    className={`prev ${currentPage === 1 ? 'disabled' : ''}`}
-                >
-                    prev
-                </button>
-
-                {/* show page numbers */}
-                {getPaginationGroup().map((item, index) => (
-                    <button
-                        key={index}
-                        onClick={changePage}
-                        className={`paginationItem ${currentPage === item ? 'active' : null}`}
-                    >
-                        <span>{item}</span>
-                    </button>
-                ))}
-
-                {/* next button */}
-                <button
-                    onClick={goToNextPage}
-                    className={`next ${currentPage === pages ? 'disabled' : ''}`}
-                >
-                    next
-                </button>
-            </div>
-        </div >
-    );
+        )
+    }
 }
 class CommentBox extends React.Component {
     constructor(props) {
@@ -138,7 +113,11 @@ class CommentBox extends React.Component {
 }
 
 class Table extends React.Component {
+
     render() {
+        console.log("table running");
+        console.log(this.props.data);
+
         const tablespieces = this.props.data.map((d, idx) => (
             <TablePiece imgurl={d.imageUrl} url={d.url} name={d.name} key={d.id} id={idx}>
 
@@ -167,8 +146,10 @@ class TablePiece extends React.Component {
 }
 
 ReactDOM.render(
-    <CommentBox
-        url="/pokemonlist"
+    <Pagination
+        title="Posts"
+        pageLimit={5}
+        dataLimit={10}
     />,
     document.getElementById('content'),
 );
