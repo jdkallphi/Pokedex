@@ -58,6 +58,10 @@ namespace BLL.Services
             var pokemons = _pokemonRepository.Get().OrderBy(x => x.PokedexIndex).Skip(page * count).Take(count).ToList();
             var pokemonDTOs = new List<PokemonDTO>();
             pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
+            foreach (var pokemon in pokemonDTOs)
+            {
+                pokemon.imageUrl = _IpokemonHelper.GetImageLink(pokemon.name).Result;
+            }
             return pokemonDTOs;
         }
 

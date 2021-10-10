@@ -1,74 +1,79 @@
-﻿import axios from 'axios';
-import ReactPaginate from 'react-paginate';
+﻿let globalCurrentPage = 1;
+let globalDataLimit = 12;
 
-class Pagination extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            offset: 0,
-            data: [],
-            perPage: 10,
-            currentPage: 0
-        };
-        this.handlePageClick = this
-            .handlePageClick
-            .bind(this);
+function Pagination({ data, title, pageLimit, dataLimit }) {
+    const [pages] = React.useState(Math.round(data.length / dataLimit));
+    const [currentPage, setCurrentPage] = React.useState(1);
+
+    function goToNextPage() {
+        setCurrentPage((page) => currentPage + 1);
+        globalCurrentPage = currentPage + 1;
     }
-    receivedData() {
-        axios
-            .get(`/pokemonlist`)
-            .then(res => {
 
-                const data = res.data;
-                const slice = data.slice(this.state.offset, this.state.offset + this.state.perPage)
-                const postData = slice.map(pd => <React.Fragment>
-                    <p>{pd.title}</p>
-                    <img src={pd.thumbnailUrl} alt="" />
-                </React.Fragment>)
-
-                this.setState({
-                    pageCount: Math.ceil(data.length / this.state.perPage),
-
-                    postData
-                })
-            });
+    function goToPreviousPage() {
+        setCurrentPage((page) => page - 1);
+        globalCurrentPage = page - 1;
     }
-    handlePageClick = (e) => {
-        const selectedPage = e.selected;
-        const offset = selectedPage * this.state.perPage;
 
-        this.setState({
-            currentPage: selectedPage,
-            offset: offset
-        }, () => {
-            this.receivedData()
-        });
+    function changePage(event) {
+        const pageNumber = Number(event.target.textContent);
+        setCurrentPage(pageNumber);
+    }
 
+    const getPaginationGroup = () => {
+        let start = (currentPage - 1) - 2 > 0 ? (currentPage - 1) - 2 : 0;
+
+        return new Array(pageLimit).fill().map((_, idx) => start + idx + 1);
     };
 
-    componentDidMount() {
-        this.receivedData()
-    }
-    render() {
-        return (
-            <div>
-                {this.state.postData}
-                <ReactPaginate
-                    previousLabel={"prev"}
-                    nextLabel={"next"}
-                    breakLabel={"..."}
-                    breakClassName={"break-me"}
-                    pageCount={this.state.pageCount}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={this.handlePageClick}
-                    containerClassName={"pagination"}
-                    subContainerClassName={"pages pagination"}
-                    activeClassName={"active"} />
+    console.log("rerunning paging");
+    return (
+        <div>
+            <h1>{title}</h1>
+
+            {/* show the posts, 12 posts at a time */}
+            <div className="dataContainer">
+                < Table currentPage={currentPage-1} dataLimit={dataLimit}>
+
+                </Table>
+
             </div>
 
-        )
-    }
+            {/* show the pagination
+        it consists of next and previous buttons
+        along with page numbers, in our case, 5 page
+        numbers at a time
+    */}
+            <div className="pagination">
+                {/* previous button */}
+                <button
+                    onClick={goToPreviousPage}
+                    className={`prev ${currentPage === 1 ? 'disabled' : ''}`}
+                >
+                    prev
+                </button>
+
+                {/* show page numbers */}
+                {getPaginationGroup().map((item, index) => (
+                    <button
+                        key={index}
+                        onClick={changePage}
+                        className={`paginationItem ${currentPage === item ? 'active' : null}`}
+                    >
+                        <span>{item}</span>
+                    </button>
+                ))}
+
+                {/* next button */}
+                <button
+                    onClick={goToNextPage}
+                    className={`next ${currentPage === pages ? 'disabled' : ''}`}
+                >
+                    next
+                </button>
+            </div>
+        </div >
+    );
 }
 class CommentBox extends React.Component {
     constructor(props) {
@@ -91,16 +96,14 @@ class CommentBox extends React.Component {
     };
     render() {
         if (this.state.data.length > 0) {
-            console.log("this state date length is > 0: " + this.state.data.length);
             return (
-
                 <div>
                     <>
                         <Pagination
                             data={this.state.data}
                             title="Posts"
                             pageLimit={5}
-                            dataLimit={10}
+                            dataLimit={globalDataLimit}
                         />
                     </>
                 </div>
@@ -113,11 +116,48 @@ class CommentBox extends React.Component {
 }
 
 class Table extends React.Component {
+    constructor(props) {
+        super(props);
 
+        this.state = {
+            isLoaded: false,
+            data: null
+        };
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps !== this.props) {
+        this.setState({isLoaded:false});
+            console.log('page=' + this.props.currentPage);
+            console.log('limit=' + this.props.dataLimit);
+            fetch('/limitedpokemonlist/' + this.props.currentPage + ' /' + this.props.dataLimit)
+                .then(response => response.json())
+                .then(body => {
+                    this.setState({ data: body });
+                })
+                .then(x => {
+                    this.setState({ isLoaded: true });
+
+                })
+                .catch(error => console.error('Error', error));
+        }
+    };
     render() {
-        console.log("table running");
-        console.log(this.props.data);
+        const { isLoaded, data } = this.state;
+        return (
+            isLoaded ?
+                <TableTest data={data}>
+                </TableTest> :
+                <div>Loading tableteset...</div>
+        );
+    }
+}
+class TableTest extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { data: [] };
 
+    }
+    render() {
         const tablespieces = this.props.data.map((d, idx) => (
             <TablePiece imgurl={d.imageUrl} url={d.url} name={d.name} key={d.id} id={idx}>
 
@@ -126,7 +166,7 @@ class Table extends React.Component {
         return (
             <div className="col-12" style={{ display: "flex", flexWrap: "wrap" }}>
                 {tablespieces}
-            </div>
+            </div >
         );
     }
 }
@@ -146,10 +186,8 @@ class TablePiece extends React.Component {
 }
 
 ReactDOM.render(
-    <Pagination
-        title="Posts"
-        pageLimit={5}
-        dataLimit={10}
+    <CommentBox
+        url="/pokemonlist"
     />,
     document.getElementById('content'),
 );
