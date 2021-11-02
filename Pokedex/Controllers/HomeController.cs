@@ -69,11 +69,11 @@ namespace Pokedex.Controllers
         public JsonResult PokemonList()
         {
             var item = _pokemonService.GetById(5);
-            var items = _pokemonService.Get().OrderBy(x => x.PokedexIndex);
+            var items = _pokemonService.Get().OrderBy(x => x.PokedexIndex).Take(3);
             return Json(items);
         }
-        [Route("limitedpokemonlist/{page?}/{count?}")]
-        public JsonResult LimitedPokemonList(int? page, int? count)
+        [Route("limitedpokemonlist/{page?}/{count?}/{search?}")]
+        public JsonResult LimitedPokemonList(int? page, int? count, string search)
         {
             List<PokemonDTO> items = new List<PokemonDTO>();
             if (page == null || count == null)
@@ -82,7 +82,7 @@ namespace Pokedex.Controllers
             }
             else
             {
-                items = _pokemonService.GetPaged((int)page, (int)count);
+                items = _pokemonService.GetPaged((int)page, (int)count, search);
 
             }
             return Json(items);

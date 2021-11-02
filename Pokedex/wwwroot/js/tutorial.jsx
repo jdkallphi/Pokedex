@@ -1,7 +1,7 @@
 ﻿let globalCurrentPage = 1;
 let globalDataLimit = 12;
-
-function Pagination({ data, title, pageLimit, dataLimit }) {
+let globalSearchTerm = "";
+function Pagination({ data, title, pageLimit, dataLimit, searchTerm }) {
     const [pages] = React.useState(Math.round(data.length / dataLimit));
     const [currentPage, setCurrentPage] = React.useState(1);
 
@@ -27,13 +27,15 @@ function Pagination({ data, title, pageLimit, dataLimit }) {
     };
 
     console.log("rerunning paging");
+    console.log(globalSearchTerm);
     return (
         <div>
             <h1>{title}</h1>
+            <SearchTest />
 
             {/* show the posts, 12 posts at a time */}
             <div className="dataContainer">
-                < Table currentPage={currentPage-1} dataLimit={dataLimit}>
+                < Table currentPage={currentPage - 1} dataLimit={dataLimit} searchTerm={searchTerm}>
 
                 </Table>
 
@@ -98,14 +100,15 @@ class CommentBox extends React.Component {
         if (this.state.data.length > 0) {
             return (
                 <div>
-                    <>
+                    <div>
                         <Pagination
                             data={this.state.data}
                             title="Posts"
                             pageLimit={5}
                             dataLimit={globalDataLimit}
+                            searchTerm={globalSearchTerm}
                         />
-                    </>
+                    </div>
                 </div>
             );
         }
@@ -126,10 +129,11 @@ class Table extends React.Component {
     }
     componentDidUpdate(prevProps) {
         if (prevProps !== this.props) {
-        this.setState({isLoaded:false});
+            this.setState({ isLoaded: false });
             console.log('page=' + this.props.currentPage);
             console.log('limit=' + this.props.dataLimit);
-            fetch('/limitedpokemonlist/' + this.props.currentPage + ' /' + this.props.dataLimit)
+            console.log('search=' + this.props.searchTerm);
+            fetch('/limitedpokemonlist/' + this.props.currentPage + ' /' + this.props.dataLimit+' /'+this.props.searchTerm)
                 .then(response => response.json())
                 .then(body => {
                     this.setState({ data: body });
@@ -183,6 +187,28 @@ class TablePiece extends React.Component {
         );
     }
 
+}
+
+class SearchTest extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            value: 'search pokemon'
+        }
+    }
+    handleChange(e) {
+        console.log('handle change called')
+        console.log(this.myinput.value)
+        globalSearchTerm = this.myinput.value;
+    }
+
+    render() {
+        return (
+            <div>
+                <input placeholder={this.state.value} onChange={(e) => { this.handleChange(e) }} ref={(input) => this.myinput = input} />
+            </div>
+        )
+    }
 }
 
 ReactDOM.render(

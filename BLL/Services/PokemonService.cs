@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DAL.Repositories.Interfaces;
+using DAL.Domains;
 
 namespace BLL.Services
 {
@@ -42,22 +43,26 @@ namespace BLL.Services
         public List<PokemonDTO> Get()
         {
             var pokemons = _pokemonRepository.Get().OrderBy(x => x.PokedexIndex).ToList();
-            var pokemonDTOs = new List<PokemonDTO>();
-            if (!pokemons.Any())
+            if (pokemons.Count == 0)
             {
                 pokemons = _IpokemonHelper.OnGet().Result;
-
             }
-            pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
-
-            return pokemonDTOs;
+            return _mapper.Map<List<PokemonDTO>>(pokemons);
         }
 
-        public List<PokemonDTO> GetPaged(int page, int count)
+        public List<PokemonDTO> GetPaged(int page, int count, string search)
         {
-            var pokemons = _pokemonRepository.Get().OrderBy(x => x.PokedexIndex).Skip(page * count).Take(count).ToList();
-            var pokemonDTOs = new List<PokemonDTO>();
-            pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
+            List<Pokemon> pokemons = new();
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                pokemons = _pokemonRepository.Find(x=>x.name.Contains(search)).ToList();
+            }
+            else
+            {
+                pokemons = _pokemonRepository.Get().ToList();
+            }
+            pokemons = pokemons.OrderBy(x => x.PokedexIndex).Skip(page * count).Take(count).ToList();
+            List<PokemonDTO> pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
             foreach (var pokemon in pokemonDTOs)
             {
                 pokemon.imageUrl = _IpokemonHelper.GetImageLink(pokemon.name).Result;
