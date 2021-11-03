@@ -59,6 +59,7 @@ namespace DAL.Helpers
             return poke;
         }
         public async Task<string> GetImageLink(string pokeName) {
+            
             PokeObject pokeObject =await GetDetails(pokeName);
             return pokeObject.sprites.front_default;
         }

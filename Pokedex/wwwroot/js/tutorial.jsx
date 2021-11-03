@@ -1,8 +1,10 @@
 ﻿let globalCurrentPage = 1;
 let globalDataLimit = 12;
 let globalSearchTerm = "";
-function Pagination({ data, title, pageLimit, dataLimit, searchTerm }) {
-    const [pages] = React.useState(Math.round(data.length / dataLimit));
+let globalPokemonId = -1;
+let globalCommentHidden = false;
+function Pagination({ data, title, pageLimit, dataLimit, searchTerm, handleClick }) {
+    const [pages] = React.useState(Math.round(data / dataLimit));
     const [currentPage, setCurrentPage] = React.useState(1);
 
     function goToNextPage() {
@@ -10,9 +12,17 @@ function Pagination({ data, title, pageLimit, dataLimit, searchTerm }) {
         globalCurrentPage = currentPage + 1;
     }
 
+    function goToFirstPage() {
+        setCurrentPage((page) => 1);
+        globalCurrentPage = 1;
+    }
+    function goToLastPage() {
+        setCurrentPage((page) => pages);
+        globalCurrentPage = pages;
+    }
     function goToPreviousPage() {
-        setCurrentPage((page) => page - 1);
-        globalCurrentPage = page - 1;
+        setCurrentPage((page) => currentPage - 1);
+        globalCurrentPage = currentPage - 1;
     }
 
     function changePage(event) {
@@ -22,20 +32,15 @@ function Pagination({ data, title, pageLimit, dataLimit, searchTerm }) {
 
     const getPaginationGroup = () => {
         let start = (currentPage - 1) - 2 > 0 ? (currentPage - 1) - 2 : 0;
-
-        return new Array(pageLimit).fill().map((_, idx) => start + idx + 1);
+        let pglmt = currentPage-2 < pageLimit * (Math.round(pages / pageLimit) - 1) ? pageLimit : pages % pageLimit;
+        return new Array(pglmt).fill().map((_, idx) => start + idx + 1);
     };
 
-    console.log("rerunning paging");
-    console.log(globalSearchTerm);
     return (
         <div>
-            <h1>{title}</h1>
-            <SearchTest />
-
             {/* show the posts, 12 posts at a time */}
             <div className="dataContainer">
-                < Table currentPage={currentPage - 1} dataLimit={dataLimit} searchTerm={searchTerm}>
+                < Table currentPage={currentPage - 1} dataLimit={dataLimit} searchTerm={searchTerm} handleClick={handleClick}>
 
                 </Table>
 
@@ -47,6 +52,14 @@ function Pagination({ data, title, pageLimit, dataLimit, searchTerm }) {
         numbers at a time
     */}
             <div className="pagination">
+
+                {/* first button */}
+                <button
+                    onClick={goToFirstPage}
+                    className={`prev ${currentPage === 1 ? 'disabled' : ''}`}
+                >
+                    first
+                </button>
                 {/* previous button */}
                 <button
                     onClick={goToPreviousPage}
@@ -73,6 +86,13 @@ function Pagination({ data, title, pageLimit, dataLimit, searchTerm }) {
                 >
                     next
                 </button>
+                {/* last button */}
+                <button
+                    onClick={goToLastPage}
+                    className={`next ${currentPage === pages ? 'disabled' : ''}`}
+                >
+                    last
+                </button>
             </div>
         </div >
     );
@@ -80,7 +100,7 @@ function Pagination({ data, title, pageLimit, dataLimit, searchTerm }) {
 class CommentBox extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data: [] };
+        this.state = { data: [], commentHidden: globalCommentHidden };
 
     }
 
@@ -88,26 +108,32 @@ class CommentBox extends React.Component {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = () => {
             var text = xhr.responseText;
-            text.replace('[', '').replace(']', '');
             text = text == "" ? "[]" : text;
+            console.log(text);
             const data = (JSON.parse(text));
             this.setState({ data: data });
         };
         xhr.open('get', this.props.url, true);
         xhr.send();
     };
+
+    handleClick = () => {
+        this.setState({ commentHidden: !this.state.commentHidden })
+    }
+
     render() {
-        if (this.state.data.length > 0) {
+        if (this.state.data > 0) {
             return (
-                <div>
-                    <div>
-                        <Pagination
-                            data={this.state.data}
-                            title="Posts"
-                            pageLimit={5}
-                            dataLimit={globalDataLimit}
-                            searchTerm={globalSearchTerm}
-                        />
+                <div key="searchtestdetails">
+                    <div className={`${this.state.commentHidden === true ? 'd-none' : 'table'}`}>
+                        <div>
+                            <SearchTest data={this.state.data} handleClick={this.handleClick} />
+                        </div>
+                    </div>
+                    <div className={`${this.state.commentHidden === true ? 'table' : 'd-none'}`}>
+                        <div>
+                            <Details data={globalPokemonId} handleClick={this.handleClick} />
+                        </div>
                     </div>
                 </div>
             );
@@ -130,10 +156,7 @@ class Table extends React.Component {
     componentDidUpdate(prevProps) {
         if (prevProps !== this.props) {
             this.setState({ isLoaded: false });
-            console.log('page=' + this.props.currentPage);
-            console.log('limit=' + this.props.dataLimit);
-            console.log('search=' + this.props.searchTerm);
-            fetch('/limitedpokemonlist/' + this.props.currentPage + ' /' + this.props.dataLimit+' /'+this.props.searchTerm)
+            fetch('/limitedpokemonlist/' + this.props.currentPage + ' /' + this.props.dataLimit + ' /' + this.props.searchTerm)
                 .then(response => response.json())
                 .then(body => {
                     this.setState({ data: body });
@@ -149,7 +172,7 @@ class Table extends React.Component {
         const { isLoaded, data } = this.state;
         return (
             isLoaded ?
-                <TableTest data={data}>
+                <TableTest data={data} handleClick={this.props.handleClick}>
                 </TableTest> :
                 <div>Loading tableteset...</div>
         );
@@ -163,7 +186,7 @@ class TableTest extends React.Component {
     }
     render() {
         const tablespieces = this.props.data.map((d, idx) => (
-            <TablePiece imgurl={d.imageUrl} url={d.url} name={d.name} key={d.id} id={idx}>
+            <TablePiece handleClick={this.props.handleClick} imgurl={d.imageUrl} url={d.url} name={d.name} key={idx} id={d.pokedexIndex}>
 
             </TablePiece>
         ))
@@ -175,12 +198,19 @@ class TableTest extends React.Component {
     }
 }
 class TablePiece extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { data: [] };
+
+    }
+    handleClick = () => {
+        globalPokemonId = this.props.id;
+    }
     render() {
         return (
-            <div className="border border-secondary border-collapse col-lg-3 col-md-4 col-sm-6 col-12 d-flex justify-content-center" id={this.props.id}>
-                <div>
+            <div style={{ backgroundColor: "lightblue" }} onClick={() => { this.handleClick(); this.props.handleClick(); }} className="border border-secondary border-collapse col-lg-3 col-md-4 col-sm-6 col-12 d-flex justify-content-center" id={this.props.id}>
+                <div >
                     <img src={this.props.imgurl} />
-                    {/*<p>{this.props.url}</p>*/}
                     <p>{this.props.name}</p>
                 </div>
             </div>
@@ -193,26 +223,113 @@ class SearchTest extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            value: 'search pokemon'
-        }
+            value: 'search pokemon',
+            searchValue: ''
+        };
+        this.timer = null;
     }
     handleChange(e) {
-        console.log('handle change called')
-        console.log(this.myinput.value)
-        globalSearchTerm = this.myinput.value;
+        // Clears running timer and starts a new one each time the user types
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+            this.setState({ searchValue: this.myinput.value })
+
+        }, 1000);
     }
 
     render() {
         return (
             <div>
-                <input placeholder={this.state.value} onChange={(e) => { this.handleChange(e) }} ref={(input) => this.myinput = input} />
+                <h1>PokeDex</h1>
+
+                <div>
+                    <input placeholder={this.state.value} onChange={(e) => { this.handleChange(e) }} ref={(input) => this.myinput = input} />
+                </div>
+                <div>
+                    <Pagination
+                        data={this.props.data}
+                        title="PokeDex"
+                        pageLimit={5}
+                        dataLimit={globalDataLimit}
+                        searchTerm={this.state.searchValue}
+                        handleClick={this.props.handleClick}
+                    />
+                </div>
             </div>
         )
     }
 }
 
+class Details extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isLoaded: false,
+            data: []
+        };
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps !== this.props) {
+            this.setState({ isLoaded: false });
+            fetch('/pokemondetails/' + globalPokemonId)
+                .then(response => response.json())
+                .then(body => {
+                    this.setState({ data: body });
+                })
+                .then(x => {
+                    this.setState({ isLoaded: true });
+
+                })
+                .catch(error => console.error('Error', error));
+        }
+    };
+    render() {
+        const { isLoaded, data } = this.state;
+        return (
+            isLoaded ?
+                <SubDetails data={data} handleClick={this.props.handleClick}>
+                </SubDetails> :
+                <div>Loading details...</div>
+        );
+    }
+
+}
+class SubDetails extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { data: [] };
+    }
+
+    render() {
+        return (
+            this.props.data.name != null ?
+                <div style={{ backgroundColor: "lightblue" }}>
+                    <div className="btn" onClick={this.props.handleClick}>return to list</div>
+                    <h1>subdetails</h1>
+                    <div>
+                        <img src={this.props.data.sprites.front_default}></img>
+                        <img src={this.props.data.sprites.front_female}></img>
+                        <img src={this.props.data.sprites.front_shiny}></img>
+                        <img src={this.props.data.sprites.front_shiny_female}></img>
+
+                        <p>id: {this.props.data.id}</p>
+                        <p>name: {this.props.data.name}</p>
+                        <p>height: {this.props.data.height/10} m</p>
+                        <p>weight: {this.props.data.weight/10} kg</p>
+                    </div>
+                </div> :
+                <div>
+                    <h1>empty subdetails</h1>
+                </div>
+        )
+    }
+}
+
+
 ReactDOM.render(
     <CommentBox
+        key="commentbox"
         url="/pokemonlist"
     />,
     document.getElementById('content'),

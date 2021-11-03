@@ -6,13 +6,19 @@
     <title>Hello React</title>
 </head>
 <body>
-    <div id="content"></div>
+    <div class="book" style="margin:auto;width:500px;">
+        <div class="back">
+            <div style="height:10%;"></div>
+            <div id="content"></div>
+        </div>
+
+        <div class="front"></div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.13.0/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.13.0/umd/react-dom.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.7.1/remarkable.min.js"></script>
     <script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
-    
-    @*<script type="module" src="@Url.Content("~/js/Pagination.jsx")"></script>*@
+
     <script type="module" src="@Url.Content("~/js/Tutorial.jsx")"></script>
 </body>
 </html>

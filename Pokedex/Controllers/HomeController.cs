@@ -14,77 +14,29 @@ namespace Pokedex.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IList<CommentModel> _comments;
         private readonly IPokemonService _pokemonService;
 
         public HomeController(ILogger<HomeController> logger, IPokemonService pokemonService)
         {
             _pokemonService = pokemonService;
             _logger = logger;
-            _comments = new List<CommentModel>
-            {
-                new CommentModel
-                {
-                    Id = 1,
-                    Author = "Daniel Lo Nigro",
-                    Text = "Hello ReactJS.NET World!"
-                },
-                new CommentModel
-                {
-                    Id = 2,
-                    Author = "Pete Hunt",
-                    Text = "This is one comment"
-                },
-                new CommentModel
-                {
-                    Id = 3,
-                    Author = "Jordan Walke",
-                    Text = "This is *another* comment"
-                },
-            };
-        }
-        [Route("comments")]
-        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public ActionResult Comments()
-        {
-            return Json(_comments);
-        }
-        [Route("comments/new")]
-        [HttpPost]
-        public ActionResult AddComment(CommentModel comment)
-        {
-            // Create a fake ID for this comment
-            comment.Id = _comments.Count + 1;
-            _comments.Add(comment);
-            return Content("Success :)");
         }
 
         public IActionResult Index()
         {
-            //var pokemons = _pokemonService.Get();
-            //var mewtwo = _pokemonService.GetByName("MewTwo");
             return View();
         }
         [Route("pokemonlist")]
         public JsonResult PokemonList()
         {
-            var item = _pokemonService.GetById(5);
-            var items = _pokemonService.Get().OrderBy(x => x.PokedexIndex).Take(3);
-            return Json(items);
+            var items = _pokemonService.Get().OrderBy(x => x.PokedexIndex).ToList();
+            return Json(items.Count);
         }
         [Route("limitedpokemonlist/{page?}/{count?}/{search?}")]
         public JsonResult LimitedPokemonList(int? page, int? count, string search)
         {
-            List<PokemonDTO> items = new List<PokemonDTO>();
-            if (page == null || count == null)
-            {
-                items = _pokemonService.Get();
-            }
-            else
-            {
-                items = _pokemonService.GetPaged((int)page, (int)count, search);
-
-            }
+            List<PokemonDTO> items = _pokemonService.GetPaged(page, count, search).Result;
+            
             return Json(items);
         }
         [Route("pokemonimages")]
@@ -92,6 +44,18 @@ namespace Pokedex.Controllers
         {
             var item = _pokemonService.GetById(5);
             return Json(item);
+        }
+
+        [Route("pokemondetails/{id}")]
+        public JsonResult GetPokemonDetails(int id)
+        {
+            PokeObjectDTO pokeObjectDTO = new PokeObjectDTO();
+            if (id > -1)
+            {
+                pokeObjectDTO = _pokemonService.GetById(id);
+
+            }
+            return Json(pokeObjectDTO);
         }
         public IActionResult Privacy()
         {

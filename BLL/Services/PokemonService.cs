@@ -46,30 +46,65 @@ namespace BLL.Services
             if (pokemons.Count == 0)
             {
                 pokemons = _IpokemonHelper.OnGet().Result;
+                foreach (var poke in pokemons)
+                {
+                    _pokemonRepository.Add(poke);
+                }
             }
+
             return _mapper.Map<List<PokemonDTO>>(pokemons);
         }
 
-        public List<PokemonDTO> GetPaged(int page, int count, string search)
+        public async Task<List<PokemonDTO>> GetPaged(int? page, int? count, string search)
         {
             List<Pokemon> pokemons = new();
             if (!string.IsNullOrWhiteSpace(search))
             {
-                pokemons = _pokemonRepository.Find(x=>x.name.Contains(search)).ToList();
+                pokemons = _pokemonRepository.Find(x => x.name.Contains(search)).ToList();
             }
             else
             {
                 pokemons = _pokemonRepository.Get().ToList();
             }
-            pokemons = pokemons.OrderBy(x => x.PokedexIndex).Skip(page * count).Take(count).ToList();
+
+            pokemons = pokemons.OrderBy(x => x.PokedexIndex).ToList();
+            if (page != null && count != null)
+            {
+                pokemons = pokemons.Skip((int)page * (int)count).Take((int)count).ToList();
+
+            }
+
             List<PokemonDTO> pokemonDTOs = _mapper.Map<List<PokemonDTO>>(pokemons);
+
+
             foreach (var pokemon in pokemonDTOs)
             {
-                pokemon.imageUrl = _IpokemonHelper.GetImageLink(pokemon.name).Result;
+                if (string.IsNullOrWhiteSpace(pokemon.imageUrl))
+                {
+                    var poke = _pokemonRepository.GetById(pokemon.Id);
+                    poke.ImageUrl = _IpokemonHelper.GetImageLink(poke.name).Result;
+                    _pokemonRepository.Update(poke);
+                    pokemon.imageUrl = poke.ImageUrl;
+                }
             }
+            var pokeNoImg = _pokemonRepository.Get().Where(x => x.ImageUrl == null).ToList();
+            await Task.Run(() => SaveImages(pokeNoImg));
+
             return pokemonDTOs;
         }
 
+        public async Task SaveImages(List<Pokemon> pokes) {
+            await Task.Run(() =>
+            {
+                foreach (var poke in pokes)
+                {
+                    poke.ImageUrl = _IpokemonHelper.GetImageLink(poke.name).Result;
+                    _pokemonRepository.Update(poke);
+                    Task.Delay(100);
+                }
+
+            });
+        }
         public PokeObjectDTO GetById(int? id)
         {
             var pokemons = _IpokemonHelper.GetDetails(id.ToString()).Result;

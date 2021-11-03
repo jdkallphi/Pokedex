@@ -57,12 +57,14 @@ namespace DAL
         public void Add(TEntity entity)
         {
             dbSet.Add(entity);
+            context.SaveChanges();
         }
 
         public virtual void Update(TEntity entity)
         {
             dbSet.Attach(entity);
             context.Entry(entity).State = EntityState.Modified;
+            context.SaveChanges();
         }
     }
 }

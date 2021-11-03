@@ -117,3 +117,76 @@ body {
     box-shadow: none;
     color: #999;
 }
+
+
+body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1200px;
+    background: #ccc;
+}
+
+.book {
+    transform-style: preserve-3d;
+    height: 700px;
+    cursor: pointer;
+    backface-visibility: visible;
+    transition: transform .5s ease-in-out, box-shadow .35s ease-in-out;
+}
+
+.front {
+    transform-style: preserve-3d;
+    position: absolute;
+    width: 500px;
+    height: 90%;
+    bottom: 0;
+    left: 0;
+    transform-origin: left center;
+    transition: transform .5s ease-in-out, box-shadow .35s ease-in-out;
+}
+
+.back {
+    transform-style: preserve-3d;
+    position: absolute;
+    width: 500px;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform-origin: left center;
+    transition: transform .5s ease-in-out, box-shadow .35s ease-in-out;
+}
+
+.front {
+    background: navy;
+}
+
+.back {
+    background: maroon;
+}
+
+.front {
+    border-bottom-right-radius: .5em;
+    border-top-right-radius: .5em;
+}
+
+.back {
+    border-bottom-right-radius: .5em;
+    border-top-right-radius: .5em;
+}
+
+.book:hover .front {
+    transform: rotateY(-180deg) scale(1.5);
+    box-shadow: 0 1em 3em 0 rgba(0, 0, 0, .2);
+}
+
+.book:hover .back {
+    transform: rotateY(-0deg) scale(1.5);
+}
+
+.book:hover {
+    transform: translate(-200px,0);
+    animation-timing-function: ease-in, ease-out;
+}
