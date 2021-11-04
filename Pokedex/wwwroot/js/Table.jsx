@@ -7,20 +7,26 @@ class Table extends React.Component {
             isLoaded: false,
             data: null
         };
+    };
+    updateData() {
+        this.setState({ isLoaded: false });
+        fetch('/limitedpokemonlist/' + this.props.currentPage + ' /' + this.props.dataLimit + ' /' + this.props.searchTerm)
+            .then(response => response.json())
+            .then(body => {
+                this.setState({ data: body });
+            })
+            .then(x => {
+                this.setState({ isLoaded: true });
+            })
+            .catch(error => console.error('Error', error));
+    }
+
+    componentDidMount() {
+        this.updateData();
     }
     componentDidUpdate(prevProps) {
         if (prevProps !== this.props) {
-            this.setState({ isLoaded: false });
-            fetch('/limitedpokemonlist/' + this.props.currentPage + ' /' + this.props.dataLimit + ' /' + this.props.searchTerm)
-                .then(response => response.json())
-                .then(body => {
-                    this.setState({ data: body });
-                })
-                .then(x => {
-                    this.setState({ isLoaded: true });
-
-                })
-                .catch(error => console.error('Error', error));
+            this.updateData();
         }
     };
     render() {
@@ -36,7 +42,7 @@ class Table extends React.Component {
 class TableTest extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data: [], PokemonId:-1 };
+        this.state = { data: [], PokemonId: -1 };
 
     }
     handleClick = (pokeId) => {
@@ -60,7 +66,7 @@ class TableTest extends React.Component {
 class TablePiece extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data: [], PokemonId:-1 };
+        this.state = { data: [], PokemonId: -1 };
 
     }
     handleClick = (pokeId) => {
@@ -70,7 +76,7 @@ class TablePiece extends React.Component {
     }
     render() {
         return (
-            <div style={{ backgroundColor: "lightblue" }} onClick={() => { this.handleClick(); this.props.handleClick(); }} className="border border-secondary border-collapse col-lg-3 col-md-4 col-sm-6 col-12 d-flex justify-content-center" id={this.props.id}>
+            <div style={{ backgroundColor: "lightblue" }} onClick={() => { this.handleClick();}} className="border border-secondary border-collapse col-lg-3 col-md-4 col-sm-6 col-12 d-flex justify-content-center" id={this.props.id}>
                 <div >
                     <img src={this.props.imgurl} />
                     <p>{this.props.name}</p>

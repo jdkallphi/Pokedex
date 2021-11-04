@@ -1,7 +1,7 @@
 ﻿import Table from "/js/Table.jsx"
 
 
-function Pagination({ data, title, pageLimit, dataLimit, searchTerm, handleClick }) {
+function Pagination({ data, pageLimit, dataLimit, searchTerm, handleClick }) {
     const [pages] = React.useState(Math.round(data / dataLimit));
     const [currentPage, setCurrentPage] = React.useState(1);
 
@@ -25,16 +25,21 @@ function Pagination({ data, title, pageLimit, dataLimit, searchTerm, handleClick
     }
 
     const getPaginationGroup = () => {
-        let start = (currentPage - 1) - 2 > 0 ? (currentPage - 1) - 2 : 0;
-        let pglmt = currentPage - 2 < pageLimit * (Math.round(pages / pageLimit) - 1) ? pageLimit : pages % pageLimit;
-        return new Array(pglmt).fill().map((_, idx) => start + idx + 1);
+
+        let pageswithmaxlimit = Math.round(pages / pageLimit) - 1;
+        let start = currentPage - 2 > 1 ? currentPage - 2 : 1;
+        let pglmt = currentPage - 2 < pageLimit * pageswithmaxlimit ? pageLimit : (pages % pageLimit + pages - currentPage);
+        return new Array(pglmt).fill().map((_, idx) => start + idx);
     };
 
+    if (currentPage != 1 && searchTerm != "") {
+        setCurrentPage(1);
+    }
     return (
         <div>
             {/* show the posts, 12 posts at a time */}
             <div className="dataContainer">
-                < Table currentPage={currentPage - 1} dataLimit={dataLimit} searchTerm={searchTerm} handleClick={handleClick}>
+                < Table currentPage={currentPage - 1} dataLimit={dataLimit} searchTerm={searchTerm} handleClick={handleClick} data={data}>
 
                 </Table>
 

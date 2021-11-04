@@ -29,7 +29,6 @@ class Search extends React.Component {
                 <div>
                     <Pagination
                         data={this.props.data}
-                        title="PokeDex"
                         pageLimit={5}
                         dataLimit={12}
                         searchTerm={this.state.searchValue}

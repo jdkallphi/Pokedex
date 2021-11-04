@@ -4,26 +4,31 @@
 
         this.state = {
             isLoaded: false,
-            data: []
+            data: null
         };
     }
     handleClick = () => {
         this.props.handleClick(this.props.id);
 
     }
+    updateData() {
+        this.setState({ isLoaded: false });
+        fetch('/pokemondetails/' + this.props.data)
+            .then(response => response.json())
+            .then(body => {
+                this.setState({ data: body }, () => {});
+            })
+            .then(x => {
+                this.setState({ isLoaded: true });
+
+            })
+            .catch(error => console.error('Error', error));
+    }
+    componentDidMount() {
+        this.updateData();}
     componentDidUpdate(prevProps) {
         if (prevProps !== this.props) {
-            this.setState({ isLoaded: false });
-            fetch('/pokemondetails/' + this.state.PokemonId)
-                .then(response => response.json())
-                .then(body => {
-                    this.setState({ data: body });
-                })
-                .then(x => {
-                    this.setState({ isLoaded: true });
-
-                })
-                .catch(error => console.error('Error', error));
+            this.updateData();
         }
     };
     render() {
