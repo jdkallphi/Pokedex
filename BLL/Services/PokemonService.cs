@@ -17,12 +17,14 @@ namespace BLL.Services
         private readonly IPokemonRepository _pokemonRepository;
         private readonly IPokemonHelper _IpokemonHelper;
         private readonly IMapper _mapper;
+        private readonly IImageService _IImageService;
 
-        public PokemonService(IMapper mapper, IPokemonHelper pokemonHelper, IPokemonRepository pokemonRepository)
+        public PokemonService(IMapper mapper, IPokemonHelper pokemonHelper, IPokemonRepository pokemonRepository, IImageService imageService)
         {
             _pokemonRepository = pokemonRepository;
             _IpokemonHelper = pokemonHelper;
             _mapper = mapper;
+            _IImageService = imageService;
 
         }
         public void Add(PokemonDTO item)
@@ -55,7 +57,7 @@ namespace BLL.Services
             return _mapper.Map<List<PokemonDTO>>(pokemons);
         }
 
-        public async Task<List<PokemonDTO>> GetPaged(int? page, int? count, string search)
+        public List<PokemonDTO> GetPaged(int? page, int? count, string search)
         {
             List<Pokemon> pokemons = new();
             if (!string.IsNullOrWhiteSpace(search))
@@ -87,24 +89,15 @@ namespace BLL.Services
                     pokemon.imageUrl = poke.ImageUrl;
                 }
             }
+            _pokemonRepository.Save();
             var pokeNoImg = _pokemonRepository.Get().Where(x => x.ImageUrl == null).ToList();
-            await Task.Run(() => SaveImages(pokeNoImg));
+            Task.Run(() => _IImageService.SaveImages(pokeNoImg));
 
             return pokemonDTOs;
         }
 
-        public async Task SaveImages(List<Pokemon> pokes) {
-            await Task.Run(() =>
-            {
-                foreach (var poke in pokes)
-                {
-                    poke.ImageUrl = _IpokemonHelper.GetImageLink(poke.name).Result;
-                    _pokemonRepository.Update(poke);
-                    Task.Delay(100);
-                }
+        
 
-            });
-        }
         public PokeObjectDTO GetById(int? id)
         {
             var pokemons = _IpokemonHelper.GetDetails(id.ToString()).Result;

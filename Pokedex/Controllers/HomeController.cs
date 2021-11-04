@@ -35,7 +35,7 @@ namespace Pokedex.Controllers
         [Route("limitedpokemonlist/{page?}/{count?}/{search?}")]
         public JsonResult LimitedPokemonList(int? page, int? count, string search)
         {
-            List<PokemonDTO> items = _pokemonService.GetPaged(page, count, search).Result;
+            List<PokemonDTO> items = _pokemonService.GetPaged(page, count, search);
             
             return Json(items);
         }
