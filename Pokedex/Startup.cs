@@ -49,6 +49,7 @@ namespace Pokedex
             services.AddScoped<IPokemonService,PokemonService>();
             services.AddScoped<IPokemonHelper,PokemonHelper>();
             services.AddScoped<IImageService, ImagesService>();
+            services.AddScoped<IMultiThreadingImages, MultiThreadingImages>();
             services.AddScoped<PokemonHelper,PokemonHelper>();
             services.AddReact();
 

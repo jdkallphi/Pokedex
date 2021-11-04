@@ -28,8 +28,7 @@ namespace BLL.Services
 
                 foreach (var poke in pokes)
                 {
-                    //poke.ImageUrl = _IpokemonHelper.GetImageLink(poke.name).Result;
-                    poke.ImageUrl = "Test";
+                    poke.ImageUrl = _IpokemonHelper.GetImageLink(poke.name).Result;
                     _pokemonRepository.Update(poke);
                     _pokemonRepository.Save();
                     //Task.Delay(1000);

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL.Repositories.Interfaces;
 using DAL.Domains;
+using System.Threading;
 
 namespace BLL.Services
 {
@@ -18,13 +19,15 @@ namespace BLL.Services
         private readonly IPokemonHelper _IpokemonHelper;
         private readonly IMapper _mapper;
         private readonly IImageService _IImageService;
+        private readonly IMultiThreadingImages _IMultiThreadingImages;
 
-        public PokemonService(IMapper mapper, IPokemonHelper pokemonHelper, IPokemonRepository pokemonRepository, IImageService imageService)
+        public PokemonService(IMapper mapper, IPokemonHelper pokemonHelper, IPokemonRepository pokemonRepository, IImageService imageService, IMultiThreadingImages IMultiThreadingImages)
         {
             _pokemonRepository = pokemonRepository;
             _IpokemonHelper = pokemonHelper;
             _mapper = mapper;
             _IImageService = imageService;
+            _IMultiThreadingImages = IMultiThreadingImages;
 
         }
         public void Add(PokemonDTO item)
@@ -57,7 +60,7 @@ namespace BLL.Services
             return _mapper.Map<List<PokemonDTO>>(pokemons);
         }
 
-        public List<PokemonDTO> GetPaged(int? page, int? count, string search)
+        public async Task<List<PokemonDTO>> GetPaged(int? page, int? count, string search)
         {
             List<Pokemon> pokemons = new();
             if (!string.IsNullOrWhiteSpace(search))
@@ -84,19 +87,23 @@ namespace BLL.Services
                 if (string.IsNullOrWhiteSpace(pokemon.imageUrl))
                 {
                     var poke = _pokemonRepository.GetById(pokemon.Id);
-                    poke.ImageUrl = _IpokemonHelper.GetImageLink(poke.name).Result;
+                    poke.ImageUrl = await _IpokemonHelper.GetImageLink(poke.name);
                     _pokemonRepository.Update(poke);
                     pokemon.imageUrl = poke.ImageUrl;
                 }
             }
             _pokemonRepository.Save();
             var pokeNoImg = _pokemonRepository.Get().Where(x => x.ImageUrl == null).ToList();
-            Task.Run(() => _IImageService.SaveImages(pokeNoImg));
+
+            _IImageService.SaveImages(pokeNoImg);
+            //ThreadStart childref = new ThreadStart(_IMultiThreadingImages.ThreadImages);
+            //Thread childThread = new Thread(childref);
+            //Thread x = new Thread(childref);
+            //childThread.Start();
+            //Task.Run(() => _IImageService.SaveImages(pokeNoImg));
 
             return pokemonDTOs;
         }
-
-        
 
         public PokeObjectDTO GetById(int? id)
         {

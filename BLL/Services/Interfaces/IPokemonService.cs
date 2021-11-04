@@ -12,6 +12,6 @@ namespace BLL.Services.Interfaces
         new public PokeObjectDTO GetById(int? id);
         public PokeObjectDTO GetByName(string name);
         public List<PokemonDTO> Get();
-        public List<PokemonDTO> GetPaged(int? page, int? count, string search);
+        public Task<List<PokemonDTO>> GetPaged(int? page, int? count, string search);
     }
 }
