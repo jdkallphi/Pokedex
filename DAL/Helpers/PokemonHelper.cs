@@ -14,11 +14,7 @@ namespace DAL.Helpers
     public class PokemonHelper : IPokemonHelper
     {
 
-        public IEnumerable<Pokemon> pokemon { get; private set; }
-
-        public bool GetBranchesError { get; private set; }
-
-        public async Task<List<Pokemon>> OnGet()
+        public async Task<List<Pokemon>> Get()
         {
             PokemonResult pokemonresult = new PokemonResult();
             string url = "https://pokeapi.co/api/v2/pokemon?limit=151";
@@ -34,9 +30,11 @@ namespace DAL.Helpers
                     pokemonresult = JsonConvert.DeserializeObject<PokemonResult>(result);
                 }
             }
+            //order by pokeIndex
             var pokemons=pokemonresult.results.OrderBy(x=>int.Parse(x.url.Split('/',StringSplitOptions.RemoveEmptyEntries).Last())).ToList();
-
+            //put said index in item
             pokemons.ForEach(x=>x.PokedexIndex = int.Parse(x.url.Split('/', StringSplitOptions.RemoveEmptyEntries).Last()));
+
             return pokemons;
         }
         /// <summary>
@@ -51,7 +49,7 @@ namespace DAL.Helpers
             {
                 string result = await content.ReadAsStringAsync();
 
-                if (result != null && result.Length >= 50)
+                if (result?.Length >= 50)
                 {
                     poke = JsonConvert.DeserializeObject<PokeObject>(result);
                 }

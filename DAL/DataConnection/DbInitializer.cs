@@ -18,7 +18,7 @@ namespace DAL.DataConnection
             {
                 return;
             }
-            var items = pokemonHelper.OnGet().Result;
+            var items = pokemonHelper.Get().Result;
 
             pokemonContext.AddRange(items);
             pokemonContext.SaveChanges();

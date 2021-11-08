@@ -45,11 +45,16 @@ namespace Pokedex
             //services.AddAutoMapper(typeof(Startup)); 
             services.AddAutoMapper(Assembly.Load("BLL"));
 
+            //background services
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<BackgroundQueueHostedService>();
+
+
             services.AddScoped<IPokemonRepository, PokemonRepository>();
             services.AddScoped<IPokemonService,PokemonService>();
             services.AddScoped<IPokemonHelper,PokemonHelper>();
-            services.AddScoped<IImageService, ImagesService>();
-            services.AddScoped<IMultiThreadingImages, MultiThreadingImages>();
+            services.AddScoped<IImagesService, ImagesService>();
+            services.AddScoped<ImagesService, ImagesService>();
             services.AddScoped<PokemonHelper,PokemonHelper>();
             services.AddReact();
 

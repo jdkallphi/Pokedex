@@ -10,39 +10,25 @@ using System.Threading.Tasks;
 using DAL.Repositories.Interfaces;
 using DAL.Domains;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BLL.Services
 {
     public class PokemonService : IPokemonService
     {
         private readonly IPokemonRepository _pokemonRepository;
-        private readonly IPokemonHelper _IpokemonHelper;
+        private readonly IPokemonHelper _pokemonHelper;
         private readonly IMapper _mapper;
-        private readonly IImageService _IImageService;
-        private readonly IMultiThreadingImages _IMultiThreadingImages;
+        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
-        public PokemonService(IMapper mapper, IPokemonHelper pokemonHelper, IPokemonRepository pokemonRepository, IImageService imageService, IMultiThreadingImages IMultiThreadingImages)
+        public PokemonService(IMapper mapper, IPokemonHelper pokemonHelper, IPokemonRepository pokemonRepository, IBackgroundTaskQueue backgroundTaskqueue)
         {
             _pokemonRepository = pokemonRepository;
-            _IpokemonHelper = pokemonHelper;
+            _pokemonHelper = pokemonHelper;
             _mapper = mapper;
-            _IImageService = imageService;
-            _IMultiThreadingImages = IMultiThreadingImages;
+            _backgroundTaskQueue = backgroundTaskqueue;
 
-        }
-        public void Add(PokemonDTO item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(PokemonDTO item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public List<PokemonDTO> Get()
@@ -50,7 +36,7 @@ namespace BLL.Services
             var pokemons = _pokemonRepository.Get().OrderBy(x => x.PokedexIndex).ToList();
             if (pokemons.Count == 0)
             {
-                pokemons = _IpokemonHelper.OnGet().Result;
+                pokemons = _pokemonHelper.Get().Result;
                 foreach (var poke in pokemons)
                 {
                     _pokemonRepository.Add(poke);
@@ -87,45 +73,45 @@ namespace BLL.Services
                 if (string.IsNullOrWhiteSpace(pokemon.imageUrl))
                 {
                     var poke = _pokemonRepository.GetById(pokemon.Id);
-                    poke.ImageUrl = await _IpokemonHelper.GetImageLink(poke.name);
+                    poke.ImageUrl = await _pokemonHelper.GetImageLink(poke.name);
                     _pokemonRepository.Update(poke);
                     pokemon.imageUrl = poke.ImageUrl;
                 }
             }
-            _pokemonRepository.Save();
-            var pokeNoImg = _pokemonRepository.Get().Where(x => x.ImageUrl == null).ToList();
-
-            _IImageService.SaveImages(pokeNoImg);
-            //ThreadStart childref = new ThreadStart(_IMultiThreadingImages.ThreadImages);
-            //Thread childThread = new Thread(childref);
-            //Thread x = new Thread(childref);
-            //childThread.Start();
-            //Task.Run(() => _IImageService.SaveImages(pokeNoImg));
-
+            await _pokemonRepository.SaveAsync();
+            if (_pokemonRepository.Get().Any(x => x.ImageUrl == null))
+            {
+                _backgroundTaskQueue.EnqueueTask(async (serviceScopeFactory, cancellationToken) =>
+                {
+                    // Get services
+                    using var scope = serviceScopeFactory.CreateScope();
+                    var myService = scope.ServiceProvider.GetRequiredService<ImagesService>();
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<PokemonService>>();
+                    try
+                    {
+                        // Do something expensive
+                        await myService.SaveImagesAsync(cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Could not do something expensive");
+                    }
+                });
+            }
             return pokemonDTOs;
         }
 
         public PokeObjectDTO GetById(int? id)
         {
-            var pokemons = _IpokemonHelper.GetDetails(id.ToString()).Result;
+            var pokemons = _pokemonHelper.GetDetails(id.ToString()).Result;
             var pokemonDTOs = _mapper.Map<PokeObjectDTO>(pokemons);
             return pokemonDTOs;
         }
         public PokeObjectDTO GetByName(string name)
         {
-            var pokemons = _IpokemonHelper.GetDetails(name).Result;
+            var pokemons = _pokemonHelper.GetDetails(name).Result;
             var pokemonDTOs = _mapper.Map<PokeObjectDTO>(pokemons);
             return pokemonDTOs;
-        }
-
-        public void Update(PokemonDTO item)
-        {
-            throw new NotImplementedException();
-        }
-
-        PokemonDTO IService<PokemonDTO>.GetById(int? id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

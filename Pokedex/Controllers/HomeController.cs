@@ -29,7 +29,7 @@ namespace Pokedex.Controllers
         [Route("pokemonlist")]
         public JsonResult PokemonList()
         {
-            var items = _pokemonService.Get().OrderBy(x => x.PokedexIndex).ToList();
+            var items = _pokemonService.Get();
             return Json(items.Count);
         }
         [Route("limitedpokemonlist/{page?}/{count?}/{search?}")]

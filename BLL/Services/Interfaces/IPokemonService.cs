@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.Interfaces
 {
-    public interface IPokemonService : IService<PokemonDTO>
+    public interface IPokemonService
     {
-        new public PokeObjectDTO GetById(int? id);
+        public PokeObjectDTO GetById(int? id);
         public PokeObjectDTO GetByName(string name);
         public List<PokemonDTO> Get();
         public Task<List<PokemonDTO>> GetPaged(int? page, int? count, string search);

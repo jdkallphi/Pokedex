@@ -16,7 +16,7 @@
         fetch('/pokemondetails/' + this.props.data)
             .then(response => response.json())
             .then(body => {
-                this.setState({ data: body }, () => {});
+                this.setState({ data: body });
             })
             .then(x => {
                 this.setState({ isLoaded: true });
@@ -25,7 +25,9 @@
             .catch(error => console.error('Error', error));
     }
     componentDidMount() {
-        this.updateData();}
+        this.updateData();
+    }
+
     componentDidUpdate(prevProps) {
         if (prevProps !== this.props) {
             this.updateData();

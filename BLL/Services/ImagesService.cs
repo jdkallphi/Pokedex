@@ -6,41 +6,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class ImagesService : IImageService
+    public class ImagesService : IImagesService
     {
         private readonly IPokemonRepository _pokemonRepository;
-        private readonly IPokemonHelper _IpokemonHelper;
+        private readonly IPokemonHelper _pokemonHelper;
 
         public ImagesService(IPokemonHelper pokemonHelper, IPokemonRepository pokemonRepository)
         {
             _pokemonRepository = pokemonRepository;
-            _IpokemonHelper = pokemonHelper;
+            _pokemonHelper = pokemonHelper;
 
         }
-        public void SaveImages(List<Pokemon> pokes)
+        public async Task SaveImagesAsync(CancellationToken stoppingToken)
         {
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-
-                foreach (var poke in pokes)
+                try
                 {
-                    poke.ImageUrl = _IpokemonHelper.GetImageLink(poke.name).Result;
-                    _pokemonRepository.Update(poke);
-                    _pokemonRepository.Save();
-                    //Task.Delay(1000);
+                    foreach (var poke in _pokemonRepository.Get().Where(x => x.ImageUrl == null).ToList())
+                    {
+                        poke.ImageUrl = _pokemonHelper.GetImageLink(poke.name).Result;
+                        _pokemonRepository.Update(poke);
+                        await _pokemonRepository.SaveAsync();
+                    }
                 }
-
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    throw;
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                throw;
-            }
-
         }
     }
 }

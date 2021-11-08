@@ -22,7 +22,7 @@ namespace DAL
 
         public virtual IEnumerable<TEntity> Get()
         {
-            return dbSet.ToList();
+            return dbSet;
         }
 
         public virtual TEntity GetById(int? id)
@@ -66,9 +66,9 @@ namespace DAL
             dbSet.Attach(entity);
             context.Entry(entity).State = EntityState.Modified;
         }
-        public virtual void Save() {
+        public virtual async Task SaveAsync() {
 
-           context.SaveChanges();
+           await context.SaveChangesAsync();
         }
     }
 }

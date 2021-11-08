@@ -24,6 +24,6 @@ namespace DAL.Repositories.Interfaces
         void Add(TEntity entity);
 
         void Update(TEntity entity);
-        public void Save();
+        public Task SaveAsync();
     }
 }

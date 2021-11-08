@@ -33,13 +33,14 @@ class Table extends React.Component {
         const { isLoaded, data } = this.state;
         return (
             isLoaded ?
-                <TableTest data={data} handleClick={this.props.handleClick}>
-                </TableTest> :
+
+                <TableAfterFetch data={data} handleClick={this.props.handleClick}>
+                </TableAfterFetch> :
                 <div>Loading tableteset...</div>
         );
     }
 }
-class TableTest extends React.Component {
+class TableAfterFetch extends React.Component {
     constructor(props) {
         super(props);
         this.state = { data: [], PokemonId: -1 };

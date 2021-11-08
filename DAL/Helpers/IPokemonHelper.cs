@@ -9,7 +9,7 @@ namespace DAL.Helpers
 {
     public interface IPokemonHelper
     {
-        public Task<List<Pokemon>> OnGet();
+        public Task<List<Pokemon>> Get();
         public Task<PokeObject> GetDetails(string pokeName);
         public Task<string> GetImageLink(string pokeName);
     }
