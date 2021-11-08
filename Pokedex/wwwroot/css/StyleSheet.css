@@ -612,6 +612,8 @@ a {
     transform: rotateY(180deg) translateX(-23vmax); }
   .ar1__front {
     background-color: #7a0619; }
+  .ar1__back {
+    background-color: #7a0619; }
   .ar1__right {
     background-color: #ab0823; }
   .ar1__left {
