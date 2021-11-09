@@ -57,7 +57,6 @@ a {
   height: 36vmax;
   transition: transform .2s; }
   .pokedex::before {
-    content: 'Pokedex';
     position: absolute;
     bottom: 2vmax;
     right: 0;
@@ -316,6 +315,13 @@ a {
       height: 10.5vmax;
       background-color: black;
       animation: pokemon-screen 1s infinite; }
+    .screen-left__top img {
+      content: '';
+      position: absolute;
+      width: 13vmax;
+      height: 10.5vmax;
+      background-color: black;
+      animation: pokemon-screen 1s infinite; }
     .screen-left__top::after {
       content: '';
       position: absolute;
@@ -362,7 +368,8 @@ a {
     transition: 2s linear 1s;
     color: #001827;
     text-shadow: 0.05vw 0.05vw 0.2vw rgba(41, 170, 253, 0.45);
-    animation: pokemon-img 1s infinite alternate; }
+    animation: pokemon-img 1s infinite alternate;
+    margin-bottom: 0; }
   .pokemon-image {
     max-width: 70%;
     object-fit: contain;
@@ -373,7 +380,8 @@ a {
     color: #204526;
     font-size: 1.5vmax;
     line-height: 1;
-    transition: 2s linear 1s; }
+    transition: 2s linear 1s;
+    margin-bottom: 0; }
   .pokemon-author {
     font-weight: normal;
     font-size: .85vmax;
@@ -395,7 +403,7 @@ a {
   justify-content: center;
   align-items: center;
   position: absolute;
-  bottom: 3.5vmax;
+  bottom: -32.5vmax;
   left: 2.5vmax;
   width: 6vmax;
   height: 3vmax;
@@ -684,15 +692,16 @@ a {
 /* Contenido derecha */
 /***********************/
 .screen-right {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
+  justify-content: normal;
+  align-items: normal;
   position: absolute;
   top: 3vmax;
   right: 2.15vmax;
   width: 18vmax;
   height: 6vmax;
-  padding: 1vmax;
+  padding: 0.3vmax;
+  padding-left: 1vmax;
   background-color: #222222;
   box-shadow: inset 0.25vmax 0.25vmax 0 black, inset -0.15vmax -0.15vmax 0 black, 0.35vmax 0.35vmax 0.35vmax rgba(34, 34, 34, 0.35); }
 
@@ -951,3 +960,20 @@ a {
 .zoom-out {
   transform: scale(1);
   transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out; }
+
+.button-large-input {
+  border: 0;
+  outline: 0;
+  padding-left: 5px; }
+
+.button-large-input:focus {
+  outline: none !important; }
+
+.poke-info {
+  font-size: xx-small;
+  margin-bottom: 0; }
+
+.poke-info-wrap {
+  display: flex; }
+  .poke-info-wrap div {
+    margin-right: 10px; }

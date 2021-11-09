@@ -278,7 +278,6 @@ a {
     transition: transform .2s;
 
     &::before {
-        content: 'Pokedex';
         position: absolute;
         bottom: 2vmax;
         right: 0;
@@ -433,6 +432,14 @@ a {
             height: 10.5vmax;
             background-color: darken($blue, 70);
             animation: pokemon-screen 1s infinite;
+        }  
+        img{
+            content: '';
+            position: absolute;
+            width: 13vmax;
+            height: 10.5vmax;
+            background-color: darken($blue, 70);
+            animation: pokemon-screen 1s infinite;
         }
 
         &::after {
@@ -495,6 +502,7 @@ a {
         color: darken($blue, 50);
         text-shadow: .05vw .05vw .2vw rgba($blue, .45);
         animation: pokemon-img 1s infinite alternate;
+        margin-bottom: 0;
     }
 
     &-image {
@@ -510,6 +518,7 @@ a {
         font-size: 1.5vmax;
         line-height: 1;
         transition: 2s linear 1s;
+        margin-bottom: 0;
     }
 
     &-author {
@@ -539,7 +548,7 @@ a {
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: 3.5vmax;
+    bottom: -32.5vmax;
     left: 2.5vmax;
     width: 6vmax;
     height: 3vmax;
@@ -748,15 +757,16 @@ a {
 /* Contenido derecha */
 /***********************/
 .screen-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block;
+    justify-content: normal;
+    align-items: normal;
     position: absolute;
     top: 3vmax;
     right: 2.15vmax;
     width: 18vmax;
     height: 6vmax;
-    padding: 1vmax;
+    padding: 0.3vmax;
+    padding-left:1vmax;
     background-color: $black;
     box-shadow: inset .25vmax .25vmax 0 darken($black, 20), inset -.15vmax -.15vmax 0 darken($black, 20), .35vmax .35vmax .35vmax rgba($black, .35);
 }
@@ -964,4 +974,27 @@ a {
 .zoom-out {
     transform: scale(1);
     transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out;
+}
+
+.button-large-input {
+    border: 0;
+    outline: 0;
+    padding-left:5px;
+}
+
+.button-large-input:focus {
+        outline: none !important;
+    }
+
+.poke-info{
+    font-size:xx-small;
+    margin-bottom:0;
+
+}
+.poke-info-wrap{
+    display:flex;
+    div{
+        margin-right:10px;
+    }
+
 }

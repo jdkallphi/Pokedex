@@ -1,4 +1,6 @@
-﻿class Details extends React.Component {
+﻿//import Typewriter from '../../node_modules/typewriter-effect';
+
+class Details extends React.Component {
     constructor(props) {
         super(props);
 
@@ -7,39 +9,10 @@
             data: null
         };
     }
-    handleClick = () => {
-        this.props.handleClick(this.props.id);
-
-    }
-    updateData() {
-        this.setState({ isLoaded: false });
-        fetch('/pokemondetails/' + this.props.data)
-            .then(response => response.json())
-            .then(body => {
-                this.setState({ data: body });
-            })
-            .then(x => {
-                this.setState({ isLoaded: true });
-
-            })
-            .catch(error => console.error('Error', error));
-    }
-    componentDidMount() {
-        this.updateData();
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps !== this.props) {
-            this.updateData();
-        }
-    };
     render() {
-        const { isLoaded, data } = this.state;
         return (
-            isLoaded ?
-                <SubDetails data={data} handleClick={this.props.handleClick}>
-                </SubDetails> :
-                <div>Loading details...</div>
+            <SubDetails data={this.props.data} handleClick={this.props.handleClick}>
+            </SubDetails>
         );
     }
 
@@ -47,29 +20,36 @@
 class SubDetails extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { data: [] };
+        this.state = {
+            data: []
+        };
     }
 
     render() {
+        var versions = ['red-blue'];
+
+        var movesAtLevel1 = this.props.data.moves.filter(d => d.version_group_details.some(c => versions.includes(c.version_group.name) && c.level_learned_at === 1));
+        var abilities = this.props.data.abilities.slice(0, 3).map((x) => x.ability.name).toString();
+        var types = this.props.data.types.slice(0, 3).map((x) => x.type.name).toString();
+
         return (
             this.props.data.name != null ?
-                <div style={{ backgroundColor: "lightblue" }}>
-                    <div className="btn" onClick={this.props.handleClick}>return to list</div>
-                    <h1>subdetails</h1>
-                    <div>
-                        <img src={this.props.data.sprites.front_default}></img>
-                        <img src={this.props.data.sprites.front_female}></img>
-                        <img src={this.props.data.sprites.front_shiny}></img>
-                        <img src={this.props.data.sprites.front_shiny_female}></img>
+                <div className='poke-info-wrap'>
+                    <div className="col-7">
 
-                        <p>id: {this.props.data.id}</p>
-                        <p>name: {this.props.data.name}</p>
-                        <p>height: {this.props.data.height / 10} m</p>
-                        <p>weight: {this.props.data.weight / 10} kg</p>
+                        <p className='poke-info'>height: {this.props.data.height / 10} m</p>
+                        <p className='poke-info'>weight: {this.props.data.weight / 10} kg</p>
+                        <p className='poke-info'>Type: {types}</p>
+                        <p className='poke-info'>moves: {movesAtLevel1.map(x=>x.move.name).toString()}</p>
+                        <p className='poke-info'>abilities: {abilities }</p>
+                    </div>
+                    <div className="col-4">
+                        {this.props.data.stats.map((el, index) => <p className='poke-info' key={index}>base-{el.stat.name}:{el.base_stat}</p> )}
+
                     </div>
                 </div> :
                 <div>
-                    <h1>empty subdetails</h1>
+                    <p className='poke-info'>no pokemon, no details</p>
                 </div>
         )
     }

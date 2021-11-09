@@ -103,15 +103,15 @@ namespace BLL.Services
 
         public PokeObjectDTO GetById(int? id)
         {
-            var pokemons = _pokemonHelper.GetDetails(id.ToString()).Result;
-            var pokemonDTOs = _mapper.Map<PokeObjectDTO>(pokemons);
-            return pokemonDTOs;
+            var pokemonObject = _pokemonHelper.GetDetails(id.ToString()).Result;
+            var pokemonObjectDTO = _mapper.Map<PokeObjectDTO>(pokemonObject);
+            return pokemonObjectDTO;
         }
         public PokeObjectDTO GetByName(string name)
         {
-            var pokemons = _pokemonHelper.GetDetails(name).Result;
-            var pokemonDTOs = _mapper.Map<PokeObjectDTO>(pokemons);
-            return pokemonDTOs;
+            var pokemonObject = _pokemonHelper.GetDetails(name).Result;
+            var pokemonObjectDTO = _mapper.Map<PokeObjectDTO>(pokemonObject);
+            return pokemonObjectDTO;
         }
     }
 }
