@@ -11,9 +11,7 @@ class PokemonImage extends React.Component {
     render() {
         return (
             this.props ?
-                this.props.data.pokemonDetails?.sprites ?
-                    <img id="pokemonimg" src={this.props.data.pokemonDetails?.sprites?.front_default} className="pokemon-out"></img > :
-                    <div>no pokemon, no image</div>
+                <img id="pokemonimg" src={this.props.data.pokemonDetails?.sprites ? this.props.data.pokemonDetails?.sprites?.front_default:"data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="} className="pokemon-out" alt=""></img >
                 : <div>loading image</div>
         );
     }

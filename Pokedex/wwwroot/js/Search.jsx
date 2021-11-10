@@ -71,15 +71,12 @@ class Search extends React.Component {
 
         if (e.target.className != 'button-large__top face button-large-input') {
             this.setState({ active: !this.state.active });
+            var pokedex = document.getElementById("pokedex");
+            var pokemonimg = document.getElementById("pokemonimg");
+            if (!pokedex.classList.contains('pokedex-transform-normal')) {
+                setTimeout(() => { pokemonimg.classList.toggle('pokemon'); pokemonimg.classList.toggle('pokemon-out'); }, 500);
+            }
         }
-        var pokedex = document.getElementById("pokedex");
-        var pokemonimg = document.getElementById("pokemonimg");
-
-        if (!pokedex.classList.contains('pokedex-transform-normal')) {
-            setTimeout(() => { pokemonimg.classList.toggle('pokemon'); pokemonimg.classList.toggle('pokemon-out'); }, 500);
-        }
-
-
     };
 
     render() {
