@@ -27,6 +27,7 @@
 
 /* Generic */
 body {
+  transform: translateZ(20vw);
   display: block;
   justify-content: center;
   align-items: center;
@@ -314,14 +315,15 @@ a {
       width: 13vmax;
       height: 10.5vmax;
       background-color: black;
-      animation: pokemon-screen 1s infinite; }
+      animation: pokemon-screen 1s infinite;
+      background-image: linear-gradient(to top, rgba(41, 170, 253, 0.025), rgba(41, 170, 253, 0.2), rgba(41, 170, 253, 0.3)); }
     .screen-left__top img {
       content: '';
       position: absolute;
       width: 13vmax;
       height: 10.5vmax;
-      background-color: black;
-      animation: pokemon-screen 1s infinite; }
+      animation: pokemon-screen 1s infinite;
+      background-image: linear-gradient(to top, rgba(41, 170, 253, 0.025), rgba(41, 170, 253, 0.2), rgba(41, 170, 253, 0.3)); }
     .screen-left__top::after {
       content: '';
       position: absolute;
@@ -335,13 +337,13 @@ a {
   position: absolute;
   width: 13vmax;
   height: 13vmax;
-  padding: 1.5vmax 1vmax 1vmax;
-  transform: rotateX(-90deg) translateY(-6.5vmax);
+  transform: translateY(-5vmax) translateZ(0vmax) rotateX(-90deg);
+  transform-origin: bottom;
   background-image: linear-gradient(to top, rgba(41, 170, 253, 0.025), rgba(41, 170, 253, 0.2), rgba(41, 170, 253, 0.3));
   border-top-left-radius: .5vmax;
   border-top-right-radius: .5vmax;
   box-shadow: 0.2vmax 0.2vmax 2vmax rgba(41, 170, 253, 0.1), -0.2vmax 0.2vmax 2vmax rgba(41, 170, 253, 0.1), 0.2vmax -0.2vmax 2vmax rgba(41, 170, 253, 0.1), -0.2vmax -0.2vmax 2vmax rgba(41, 170, 253, 0.1);
-  transition: opacity 2s linear 1s; }
+  transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out; }
   .pokemon::before {
     content: '';
     position: absolute;
@@ -397,6 +399,11 @@ a {
   .pokemon-tag {
     font-size: .85vmax;
     color: #DEDEDE; }
+
+.pokemon-out {
+  transform: translateY(0vmax) translateZ(0vmax) rotateX(0deg);
+  transform-origin: bottom;
+  transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out; }
 
 .screen-left-2 {
   display: flex;
@@ -578,7 +585,7 @@ a {
   bottom: 0;
   right: 0;
   width: 23vmax;
-  height: 36vmax;
+  height: 30vmax;
   transform-origin: left;
   transition: transform 2s, translate 2s; }
 
@@ -635,7 +642,7 @@ a {
   position: absolute;
   width: 11.5vmax;
   height: 5vmax;
-  top: 4vmax;
+  top: -2vmax;
   left: 0; }
   .ar2__front {
     width: 11.5vmax;
@@ -953,14 +960,6 @@ a {
   50%, 60%, 64%, 70% {
     opacity: .95; } }
 
-.zoom-in {
-  transform: scale(1.5);
-  transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out; }
-
-.zoom-out {
-  transform: scale(1);
-  transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out; }
-
 .button-large-input {
   border: 0;
   outline: 0;
@@ -977,3 +976,11 @@ a {
   display: flex; }
   .poke-info-wrap div {
     margin-right: 10px; }
+
+.pokedex-transform {
+  transform: scale(1) perspective(10000px) rotateX(40deg) rotateZ(10deg) translateZ(0vw) translateX(5vw);
+  transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out; }
+
+.pokedex-transform-normal {
+  transform: scale(1.5);
+  transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out; }

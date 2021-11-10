@@ -244,6 +244,7 @@ $bg: #3647bd;
 }
 /* Generic */
 body {
+    transform: translateZ(20vw);
     display: block;
     justify-content: center;
     align-items: center;
@@ -432,14 +433,16 @@ a {
             height: 10.5vmax;
             background-color: darken($blue, 70);
             animation: pokemon-screen 1s infinite;
-        }  
-        img{
+            background-image: linear-gradient(to top,rgba(41,170,253,.025),rgba(41,170,253,.2),rgba(41,170,253,.3));
+        }
+
+        img {
             content: '';
             position: absolute;
             width: 13vmax;
             height: 10.5vmax;
-            background-color: darken($blue, 70);
             animation: pokemon-screen 1s infinite;
+            background-image: linear-gradient(to top,rgba(41,170,253,.025),rgba(41,170,253,.2),rgba(41,170,253,.3));
         }
 
         &::after {
@@ -458,13 +461,13 @@ a {
     position: absolute;
     width: 13vmax;
     height: 13vmax;
-    padding: 1.5vmax 1vmax 1vmax;
-    transform: rotateX(-90deg) translateY(-6.5vmax);
+    transform: translateY(-5vmax) translateZ(0vmax) rotateX(-90deg) ;
+    transform-origin:bottom;
     background-image: linear-gradient(to top, rgba($blue, .025), rgba($blue, .2), rgba($blue, .3));
     border-top-left-radius: .5vmax;
     border-top-right-radius: .5vmax;
     box-shadow: .2vmax .2vmax 2vmax rgba($blue, .1), -.2vmax .2vmax 2vmax rgba($blue, .1), .2vmax -.2vmax 2vmax rgba($blue, .1), -.2vmax -.2vmax 2vmax rgba($blue, .1);
-    transition: opacity 2s linear 1s;
+    transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out;
 
     &::before {
         content: '';
@@ -542,7 +545,11 @@ a {
         color: $white;
     }
 }
-
+.pokemon-out {
+    transform: translateY(0vmax) translateZ(0vmax) rotateX(0deg);
+    transform-origin: bottom;
+    transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out;
+}
 .screen-left-2 {
     display: flex;
     justify-content: center;
@@ -664,7 +671,7 @@ a {
     bottom: 0;
     right: 0;
     width: 23vmax;
-    height: 36vmax;
+    height: 30vmax;
     transform-origin: left;
     transition: transform 2s, translate 2s;
 }
@@ -711,7 +718,7 @@ a {
     position: absolute;
     width: 11.5vmax;
     height: 5vmax;
-    top: 4vmax;
+    top: -2vmax;
     left: 0;
 
     $width-el: 11.5vmax;
@@ -966,16 +973,6 @@ a {
     }
 }
 
-
-.zoom-in {
-    transform: scale(1.5);
-    transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out;
-}
-.zoom-out {
-    transform: scale(1);
-    transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out;
-}
-
 .button-large-input {
     border: 0;
     outline: 0;
@@ -997,4 +994,13 @@ a {
         margin-right:10px;
     }
 
+}
+
+.pokedex-transform {
+    transform:scale(1) perspective(10000px) rotateX(40deg) rotateZ(10deg) translateZ(0vw) translateX(5vw);
+    transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out;
+}
+.pokedex-transform-normal {
+    transform: scale(1.5);
+    transition: transform 1.5s ease-in-out, box-shadow 1.5s ease-in-out;
 }

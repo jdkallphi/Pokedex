@@ -1,114 +1,28 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿let pokedexFunc = () => {
+    var pokedex = document.getElementById("pokedex");
+    pokedex.classList.add('pokedex-transform');
+    pokedex.classList.remove('pokedex-transform-normal');
 
-// Write your JavaScript code.
-// ************************************
-// ************************************
-//const b = document.body
+}
 
-//const pokemon = document.querySelector("#pokemon")
-//const pokedex = document.querySelector("#pokedex")
-//const pokedexCover = document.querySelector("#pokedex-cover")
-//const pokedexShadow = document.querySelector("#pokedex-shadow")
-//const pokemonAuthor = document.querySelector("#pokemon-author")
-
-//const arrowBack = document.querySelector("#arrow-back")
-//const arrowNext = document.querySelector("#arrow-next")
-////const pokemonNumber = document.querySelector("#pokemon-number")
-////const pokemonName = document.querySelector("#pokemon-name")
-////const pokemonImage = document.querySelector("#pokemon-image")
-////const pokemonAudio = document.querySelector("#pokemon-audio")
-////const pokemonTag = document.querySelectorAll(".pokemon-tag")
-////const pokemonSource = document.querySelector("#pokemon-audio source")
-
-//const pokelist =
-//    [
-//        {
-//            "number": "07",
-//            "name": "Squirtle",
-//            "image": "https://rawcdn.githack.com/ricardoolivaalonso/Codepen/b8f0008fb1089420c3667ec249203b0ea648d46d/pokedex/img/squirtle.gif",
-//            "audio": "https://raw.githubusercontent.com/ricardoolivaalonso/Codepen/master/pokedex/audio/squirtle.mp3",
-//            "tagA": 'water',
-//            "tagB": '',
-//        },
-//        {
-//            "number": "06",
-//            "name": "Charizard",
-//            "image": "https://rawcdn.githack.com/ricardoolivaalonso/Codepen/b8f0008fb1089420c3667ec249203b0ea648d46d/pokedex/img/charizard.gif",
-//            "audio": "https://raw.githubusercontent.com/ricardoolivaalonso/Codepen/master/pokedex/audio/charizard.mp3",
-//            "tagA": 'fire',
-//            "tagB": 'flying',
-//        },
-//        {
-//            "number": "01",
-//            "name": "Bulbasaur",
-//            "image": "https://rawcdn.githack.com/ricardoolivaalonso/Codepen/b8f0008fb1089420c3667ec249203b0ea648d46d/pokedex/img/bulbasaur.gif",
-//            "audio": "https://raw.githubusercontent.com/ricardoolivaalonso/Codepen/master/pokedex/audio/bulbasaur.mp3",
-//            "tagA": 'grass',
-//            "tagB": 'poison',
-//        },
-//    ]
-//let con = -1
-//let cover = 0
-//// ************************************
-//// ************************************
-//let pokedexFunc = (e) => {
-//    var x = e.pageX / window.innerWidth - 0.5
-//    var y = e.pageY / window.innerHeight - 0.5
-
-//}
-////---------------------------
-//let getPokemonFunc = (e) => {
-
-//    if (e && e.currentTarget) {
-//        if (e.currentTarget.id == 'arrow-next' && con < 2) con++
-//        else if (e.currentTarget.id == 'arrow-back' && con > 0) con--
-//    }
-
-//    //pokemonNumber.innerText = pokelist[con].number
-//    //pokemonName.innerText = pokelist[con].name
-//    //pokemonImage.src = pokelist[con].image
-//    //pokemonTag[0].innerText = pokelist[con].tagA
-//    //pokemonTag[1].innerText = pokelist[con].tagB
-//    //pokemonSource.src = pokelist[con].audio
-//    //pokemonAudio.load()
-//    //pokemonAudio.play()
-//}
-//---------------------------
-//let pokedexCoverFunc = () => {
-//    if (cover % 2 == 0) {
-//        //    pokemonNumber.classList.remove('is-pokemon-hidden')
-//        pokemonAuthor.classList.remove('is-pokemon-hidden')
-//        pokedexCover.classList.remove('is-pokedex-open')
-//        pokedexShadow.classList.remove('is-shadow-hidden')
-//        pokedex.classList.add('zoom-in')
-//        pokedex.classList.remove('zoom-out')
-//    }
-//    else {
-//        // pokemonNumber.classList.add('is-pokemon-hidden')
-//        pokemonAuthor.classList.add('is-pokemon-hidden')
-//        pokedexCover.classList.add('is-pokedex-open')
-//        pokedexShadow.classList.add('is-shadow-hidden')
-//        pokedex.classList.remove('zoom-in')
-//        pokedex.classList.add('zoom-out')
-//        //pokemonAudio.pause()
-
-//        //pokemonNumber.innerText = ''
-//        //pokemonName.innerText = ''
-//        //pokemonImage.src = ''
-//        //pokemonTag[0].innerText = ''
-//        //pokemonTag[1].innerText = ''
-//        //pokemonSource.src = ''
-//        con = -1
-//    }
-//    cover++
-//}
-// ************************************
-// ************************************
-//b.addEventListener("pointermove", pokedexFunc)
-//pokedexCover.addEventListener("click", pokedexCoverFunc)
-//arrowNext.addEventListener("click", getPokemonFunc)
-//arrowBack.addEventListener("click", getPokemonFunc)
+let transformPokedex = () => {
+    var pokedex = document.getElementById("pokedex");
+    var pokemonimg = document.getElementById("pokemonimg");
+    var blueled = document.getElementById("BlueLed");
+    var pokedexcover = document.getElementById("pokedex-cover");
+    blueled.onclick = function () {
+        pokedex.classList.toggle("pokedex-transform");
+        pokedex.classList.toggle('pokedex-transform-normal');
+        if (pokedex.classList.contains('pokedex-transform-normal')) {
+            pokemonimg.classList.remove('pokemon');
+            pokemonimg.classList.add('pokemon-out');
+        }
+        else if (!pokedexcover.classList.contains("is-pokedex-open")) {
+            pokemonimg.classList.add('pokemon');
+            pokemonimg.classList.remove('pokemon-out');
+        }
+    };
+}
 function waitForElement(elementId, callBack) {
     window.setTimeout(function () {
         var element = document.getElementById(elementId);
@@ -119,7 +33,9 @@ function waitForElement(elementId, callBack) {
         }
     }, 500)
 }
-//waitForElement('pokedex', function () {
-//    for (var i = 0; i < 12; i++)
-//        document.querySelector("#buttons-right-1").insertAdjacentHTML("beforeend", "<div class='button-right'><div class='button-right__front face'></div><div class='button-right__back face'></div><div class='button-right__right face'></div><div class='button-right__left face'></div><div class='button-right__top face'></div><div class='button-right__bottom face'></div></div>");
-//});
+waitForElement('pokedex', function () {
+    pokedexFunc();
+});
+waitForElement('BlueLed', function () {
+    transformPokedex();
+});

@@ -8,20 +8,11 @@ class PokemonImage extends React.Component {
         };
     }
 
-    //componentDidMount() {
-    //    this.updateData();
-    //}
-    //componentDidUpdate(prevProps) {
-    //    if (prevProps !== this.props) {
-    //        this.updateData();
-    //    }
-    //};
-
     render() {
         return (
             this.props ?
                 this.props.data.pokemonDetails?.sprites ?
-                    < img src={this.props.data.pokemonDetails?.sprites?.front_default} ></img > :
+                    <img id="pokemonimg" src={this.props.data.pokemonDetails?.sprites?.front_default} className="pokemon-out"></img > :
                     <div>no pokemon, no image</div>
                 : <div>loading image</div>
         );

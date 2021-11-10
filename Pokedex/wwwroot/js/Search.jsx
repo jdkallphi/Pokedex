@@ -72,6 +72,14 @@ class Search extends React.Component {
         if (e.target.className != 'button-large__top face button-large-input') {
             this.setState({ active: !this.state.active });
         }
+        var pokedex = document.getElementById("pokedex");
+        var pokemonimg = document.getElementById("pokemonimg");
+
+        if (!pokedex.classList.contains('pokedex-transform-normal')) {
+            setTimeout(() => { pokemonimg.classList.toggle('pokemon'); pokemonimg.classList.toggle('pokemon-out'); }, 500);
+        }
+
+
     };
 
     render() {
@@ -79,7 +87,7 @@ class Search extends React.Component {
         return (
             isLoaded ?
                 <div>
-                    <div id="pokedex" className={this.state.active ? 'pokedex zoom-in' : 'pokedex zoom-out'}>
+                    <div id="pokedex" className="pokedex pokedex-transform-normal">
                         <div className="shadows">
                             <div className="shadow-1"></div>
                             <div id="pokedex-shadow" className={this.state.active ? 'shadow-2' : 'shadow-2 is-shadow-hidden'}></div>
@@ -142,8 +150,8 @@ class Search extends React.Component {
                             </div>
                         </div>
                         <ScreenLeft data={this.state}></ScreenLeft>
-                        <Arrows data={(e)=>this.cycleList(e)}></Arrows>
-                        <div className="led"></div>
+                        <Arrows data={(e) => this.cycleList(e)}></Arrows>
+                        <div className="led" id="BlueLed"></div>
                         <div className="led-a"></div>
                         <div className="led-b"></div>
                         <div className="led-c"></div>
